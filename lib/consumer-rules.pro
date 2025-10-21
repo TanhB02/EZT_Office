@@ -22,3 +22,18 @@
 -keepclassmembers class * {
     public protected <methods>;
 }
+
+# Keep important asset files
+-keep class ** { *; }
+-dontwarn android.webkit.**
+-dontwarn org.libreoffice.**
+
+# Keep LibreOffice web assets
+-keep class * extends android.app.Activity {
+    public void *(android.webkit.WebView);
+}
+
+# Keep web resources that are loaded via file:///android_asset/
+-keepclassmembers class * {
+    public static *** getAssetManager(...);
+}

@@ -9,6 +9,19 @@ android {
     buildDir = "${rootProject.getBuildDir()}/app"
     ndkVersion "26.1.10909125"
 
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
+            credentials {
+                username = providers.gradleProperty("gpr.user").orElse(System.getenv("GITHUB_ACTOR") ?: "").get()
+                password = providers.gradleProperty("gpr.token").orElse(System.getenv("GITHUB_TOKEN") ?: "").get()
+            }
+        }
+    }
+
     defaultConfig {
         minSdkVersion 26
         targetSdkVersion 36
@@ -80,7 +93,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation "ezt.documents:libreoffice:1.0.0-beta5"
+    implementation "ezt.documents:libreoffice:1.0.0-beta7"
 
 //    implementation project(path: ':lib')
 

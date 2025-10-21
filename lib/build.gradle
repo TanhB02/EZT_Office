@@ -20,7 +20,7 @@ android {
         buildConfigField "String", "GIT_COMMIT", "\"${liboOVersionHash}\""
         buildConfigField "boolean", "GOOGLE_PLAY_ENABLED", "${liboGooglePlay}"
 
-        // consumerProguardFiles "consumer-rules.pro"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -124,7 +124,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta5"
+                version = "1.0.0-beta7"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 
