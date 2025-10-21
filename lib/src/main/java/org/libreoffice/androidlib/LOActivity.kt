@@ -51,6 +51,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONException
 import org.json.JSONObject
 import org.libreoffice.androidlib.lok.LokClipboardData
+import org.libreoffice.androidlib.utils.UtilsOffice
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -114,6 +115,10 @@ class LOActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Load native library from zip first
+        loadNativeLibrary(this)
+
         this.savedInstanceState = savedInstanceState
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -1491,8 +1496,44 @@ class LOActivity : AppCompatActivity() {
                 .hasSystemFeature("org.chromium.arc.device_management")
         }
 
+        private var libraryLoaded = false
+
+        /**
+         * Load native library that was previously extracted from zip
+         * This should be called early in the Activity lifecycle (e.g., in onCreate)
+         * The library must be extracted first in LibreOfficeUIActivity
+         */
+        @JvmStatic
+        fun loadNativeLibrary(context: Context) {
+            if (libraryLoaded) {
+                return
+            }
+
+            try {
+                val success = UtilsOffice.loadExtractedLibrary(context, "androidapp")
+                if (success) {
+                    Log.i(TAG, "Successfully loaded library from extracted file")
+                    libraryLoaded = true
+                } else {
+                    // Fallback to standard loading if extracted library not found
+                    Log.w(TAG, "Extracted library not found, trying standard System.loadLibrary")
+                    System.loadLibrary("androidapp")
+                    libraryLoaded = true
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load library: ${e.message}")
+                // Last resort: try standard loading
+                try {
+                    System.loadLibrary("androidapp")
+                    libraryLoaded = true
+                } catch (e2: Exception) {
+                    Log.e(TAG, "All library loading methods failed: ${e2.message}")
+                    throw e2
+                }
+            }
+        }
         init {
-            System.loadLibrary("androidapp")
+            // Library will be loaded in onCreate via loadNativeLibrary()
         }
 
         /**

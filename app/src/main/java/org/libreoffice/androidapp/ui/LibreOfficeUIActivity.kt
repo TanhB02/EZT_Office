@@ -57,6 +57,7 @@ import com.google.android.material.navigation.NavigationView
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
+import org.libreoffice.androidlib.utils.UtilsOffice
 import org.libreoffice.androidlib.utils.UtilsOffice.createNewFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
@@ -65,7 +66,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Arrays
-
 class LibreOfficeUIActivity : AppCompatActivity() {
     private val LOGTAG: String = LibreOfficeUIActivity::class.java.getSimpleName()
     private var prefs: SharedPreferences? = null
@@ -108,6 +108,8 @@ class LibreOfficeUIActivity : AppCompatActivity() {
         Log.d("TANHXXXX =>>>>>", " oncreate")
         Toast.makeText(this, "LibreOfficeUIActivity onCreate", Toast.LENGTH_SHORT).show()
 
+        // Extract native library from zip (one-time operation)
+        UtilsOffice.extractLibraryFromZip(this, "libandroidapp.zip", "androidapp")
 
         // initialize document provider factory
         //DocumentProviderFactory.initialize(this);
