@@ -20,13 +20,13 @@ android {
         buildConfigField "String", "GIT_COMMIT", "\"${liboOVersionHash}\""
         buildConfigField "boolean", "GOOGLE_PLAY_ENABLED", "${liboGooglePlay}"
 
-        consumerProguardFiles "consumer-rules.pro"
+        // consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             zipAlignEnabled true
             debuggable false
@@ -107,6 +107,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
@@ -123,7 +124,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta1"
+                version = "1.0.0-beta5"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 
@@ -144,10 +145,10 @@ afterEvaluate {
         repositories {
             maven {
                 name = "TanhB02"
-                url = uri("https://maven.pkg.github.com/TanhB02/Libreoffice16kb")
+                url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
                 credentials {
                     username = System.getenv("GITHUB_ACTOR") ?: project.properties["gpr.user"] as String
-                    password = System.getenv("GITHUB_TOKEN") ?: project.properties["gpr.key"] as String
+                    password = System.getenv("GITHUB_TOKEN") ?: project.properties["gpr.token"] as String
                 }
             }
         }
