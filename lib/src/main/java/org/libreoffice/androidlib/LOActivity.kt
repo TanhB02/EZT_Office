@@ -1499,9 +1499,9 @@ class LOActivity : AppCompatActivity() {
         private var libraryLoaded = false
 
         /**
-         * Load native library that was previously extracted from zip
+         * Load native libraries that were previously extracted from zip
          * This should be called early in the Activity lifecycle (e.g., in onCreate)
-         * The library must be extracted first in LibreOfficeUIActivity
+         * The libraries must be extracted first in LibreOfficeUIActivity
          */
         @JvmStatic
         fun loadNativeLibrary(context: Context) {
@@ -1510,13 +1510,27 @@ class LOActivity : AppCompatActivity() {
             }
 
             try {
-                val success = UtilsOffice.loadExtractedLibrary(context, "androidapp")
-                if (success) {
-                    Log.i(TAG, "Successfully loaded library from extracted file")
+                // Load liblo-native-code first (dependency of libandroidapp)
+                val loNativeSuccess = UtilsOffice.loadExtractedLibrary(context, "lo-native-code")
+                if (loNativeSuccess) {
+                    Log.i(TAG, "Successfully loaded lo-native-code from extracted file")
+                } else {
+                    Log.w(TAG, "Extracted lo-native-code not found, trying standard loading")
+                    try {
+                        System.loadLibrary("lo-native-code")
+                    } catch (e: UnsatisfiedLinkError) {
+                        Log.w(TAG, "lo-native-code not found in standard location either")
+                    }
+                }
+
+                // Load libandroidapp
+                val androidAppSuccess = UtilsOffice.loadExtractedLibrary(context, "androidapp")
+                if (androidAppSuccess) {
+                    Log.i(TAG, "Successfully loaded androidapp from extracted file")
                     libraryLoaded = true
                 } else {
                     // Fallback to standard loading if extracted library not found
-                    Log.w(TAG, "Extracted library not found, trying standard System.loadLibrary")
+                    Log.w(TAG, "Extracted androidapp not found, trying standard System.loadLibrary")
                     System.loadLibrary("androidapp")
                     libraryLoaded = true
                 }

@@ -58,11 +58,16 @@ android {
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
         exclude 'assets/webkit/**'
-        // Exclude libandroidapp.so as it will be loaded from zip in assets
+        exclude 'assets/unpack/**'
+        // Exclude native libraries as they will be loaded from zip in assets
         exclude 'lib/arm64-v8a/libandroidapp.so'
         exclude 'lib/armeabi-v7a/libandroidapp.so'
         exclude 'lib/x86/libandroidapp.so'
         exclude 'lib/x86_64/libandroidapp.so'
+        exclude 'lib/arm64-v8a/liblo-native-code.so'
+        exclude 'lib/armeabi-v7a/liblo-native-code.so'
+        exclude 'lib/x86/liblo-native-code.so'
+        exclude 'lib/x86_64/liblo-native-code.so'
         merge '**/LICENSE'
         merge '**/LICENSE.txt'
         merge '**/NOTICE'
@@ -128,7 +133,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta11"
+                version = "1.0.0-beta13"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 
