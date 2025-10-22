@@ -21,3 +21,4 @@ android.iml
 #/lib/src/debug/assets
 #/lib/src/release/assets
 #/lib/src/main/cpp/lib
+/gradle.properties

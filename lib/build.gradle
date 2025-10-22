@@ -124,7 +124,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta13"
+                version = "1.0.0-beta29"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 

@@ -47,12 +47,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
@@ -642,7 +644,9 @@ class LibreOfficeUIActivity : AppCompatActivity() {
                 if (resultCode != RESULT_OK || data == null) return
                 val extension =
                     if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) "docx" else (if (requestCode == CREATE_SPREADSHEET_REQUEST_CODE) "xlsx" else "pptx")
-                createNewFile(data.getData()!!, extension)
+               lifecycleScope.launch {
+                   createNewFile(data.getData()!!, extension)
+               }
                 openFile(data.getData())
             }
         }

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.libreoffice.androidlib.Intent_Killed_Process
 import org.libreoffice.androidlib.utils.OtherExt.getIntentToEdit
 import org.libreoffice.androidlib.utils.OtherExt.logD
@@ -28,38 +30,17 @@ object UtilsOffice {
         startActivity(i)
     }
 
-    fun Context.createNewFile(uri: Uri, fileType: String? = XLSX) {
-        class CreateThread : Thread() {
-            override fun run() {
-                var templateFileStream: InputStream? = null
-                var newFileStream: OutputStream? = null
-                try {
-                    templateFileStream = this@createNewFile.getAssets().open("templates/untitled." + fileType)
-                    newFileStream = this@createNewFile.getContentResolver().openOutputStream(uri)
-                    val buffer = ByteArray(1024)
-                    var length: Int
-                    while ((templateFileStream.read(buffer).also { length = it }) > 0) {
-                        newFileStream!!.write(buffer, 0, length)
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } finally {
-                    try {
-                        templateFileStream!!.close()
-                        newFileStream!!.close()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
+    suspend fun Context.createNewFile(uri: Uri, fileType: String? = XLSX) {
+        withContext(Dispatchers.IO) {
+            try {
+                assets.open("templates/untitled.$fileType").use { input ->
+                    contentResolver.openOutputStream(uri)?.use { output ->
+                        input.copyTo(output)
+                    } ?: error("Cannot open output stream for $uri")
                 }
+            } catch (e: IOException) {
+                logD("TANHXXXX =>>>>> message:${e.message}")
             }
-        }
-
-        val thread = CreateThread()
-        thread.run()
-        try {
-            thread.join()
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
