@@ -38,7 +38,7 @@ gpr.token=
 
 ```
 dependencies {
-	implementation "ezt.documents:libreoffice: release_version"
+	implementation "ezt.documents:libreoffice:1.0.0-beta1"
 }
 ```
 ### 🔧 Core Functions
