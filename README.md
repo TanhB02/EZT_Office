@@ -3,7 +3,6 @@
 ## 📚 Contents
 
 - 🚀 [Install](#-install)
-- ⚙️ [Setup Library](#-setup-library)
 - 🔧 [Core Functions](#-core-functions)
 - 💡 [Usage Examples](#-usage-examples)
 
