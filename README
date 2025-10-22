@@ -7,40 +7,48 @@
 - 🔧 [Core Functions](#-core-functions)
 - 💡 [Usage Examples](#-usage-examples)
 
+---
 
-## Install
+## 🚀 Install
 
-## Trong settings.gradle.kts hoặc build.gradle cấp project
+### 🔹 Trong `settings.gradle.kts` hoặc `build.gradle` cấp project
 
-```
+```groovy
 repositories {
-        google()
-        mavenCentral()
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
-            credentials {
-                username = providers.gradleProperty("gpr.user").orElse(System.getenv("GITHUB_ACTOR") ?: "").get()
-                password = providers.gradleProperty("gpr.token").orElse(System.getenv("GITHUB_TOKEN") ?: "").get()
-            }
+    google()
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
+        credentials {
+            username = providers.gradleProperty("gpr.user")
+                .orElse(System.getenv("GITHUB_ACTOR") ?: "")
+                .get()
+            password = providers.gradleProperty("gpr.token")
+                .orElse(System.getenv("GITHUB_TOKEN") ?: "")
+                .get()
         }
     }
+}
 ```
 
-### gradle.properties --- 
+### 🔹 `gradle.properties`
 
-```
+```properties
 gpr.user=TanhB02
 gpr.token=
 ```
 
-### build.gradle(Module:app)
+### 🔹 `build.gradle` (Module: app)
 
-```
+```groovy
 dependencies {
-	implementation "ezt.documents:libreoffice: release_version"
+    implementation "ezt.documents:libreoffice:release_version"
 }
 ```
+
+---
+
 ### 🔧 Core Functions
 
 | Function | Mô tả | Return |
@@ -48,16 +56,19 @@ dependencies {
 | `openFile(uri: Uri?, onClosed: (() -> Unit)? = null)` | Mở file bằng LibreOffice (`LOActivity`). Tự động cấp quyền URI và đăng ký callback khi LibreOffice bị đóng. | `Unit` |
 | `createFile(fileName: String, fileType: String = "xlsx", onClosed: (() -> Unit)? = null)` | Tạo file mới trong `MediaStore` từ template có sẵn, sau đó tự động mở bằng LibreOffice. | `suspend Unit` |
 | `openSystemPicker()` | Mở trình chọn file hệ thống (`ACTION_OPEN_DOCUMENT`) với danh sách MIME types hỗ trợ. Tự động fallback sang `ACTION_GET_CONTENT` nếu cần. | `Unit` |
-| `openSystemPicker()` | Gọi system picker để chọn và mở tài liệu. Yêu cầu `registerDocumentPicker()` được gọi trước trong `Activity`. | `Unit` |
+| `pickAndOpenDocument()` | Gọi system picker để chọn và mở tài liệu. Yêu cầu `registerDocumentPicker()` được gọi trước trong `Activity`. | `Unit` |
 | `registerDocumentPicker()` | Đăng ký launcher cho `ActivityResultContracts.OpenDocument`. Khi người dùng chọn file, hàm sẽ tự động mở file bằng LibreOffice. | `Unit` |
 
 ---
+
 ### 💡 Usage Examples
 
-Dưới đây là các ví dụ đầy đủ hướng dẫn cách sử dụng tất cả hàm trong `UtilsOffice`.
+Dưới đây là các ví dụ hướng dẫn chi tiết cách sử dụng các hàm trong `UtilsOffice`.
 
+---
 
 #### 🔹 1. Mở file LibreOffice có sẵn  
+
 Dùng khi bạn đã có `Uri` của file cần mở.  
 Hàm này tự động cấp quyền truy cập và mở file bằng `LibreOffice (LOActivity)`.
 
@@ -71,6 +82,7 @@ UtilsOffice.openFile(fileUri) {
 ---
 
 #### 🔹 2. Tạo file mới và mở bằng LibreOffice  
+
 Dùng khi bạn muốn tạo file mới dựa trên template trong thư mục `assets/templates/`  
 và mở trực tiếp bằng LibreOffice.  
 Hàm này là `suspend`, cần được gọi trong coroutine (ví dụ: `lifecycleScope.launch`).
@@ -89,6 +101,7 @@ lifecycleScope.launch {
 ---
 
 #### 🔹 3. Mở trình chọn file hệ thống (System Picker)  
+
 Dùng khi bạn muốn cho phép người dùng chọn một file từ bộ nhớ hệ thống.  
 Hàm sẽ mở system picker với danh sách MIME types hỗ trợ như ODF, OOXML, PDF, CSV, v.v.  
 Nếu thiết bị không hỗ trợ `ACTION_OPEN_DOCUMENT`, hàm sẽ tự động fallback sang `ACTION_GET_CONTENT`.  
@@ -112,7 +125,34 @@ class MainActivity : AppCompatActivity() {
 
 ---
 
-#### 🔹 4. Mở file và lắng nghe sự kiện khi LibreOffice đóng  
+#### 🔹 4. Cho phép người dùng chọn và mở tài liệu ngay lập tức  
+
+Dùng khi bạn muốn người dùng có thể chọn file và mở nó ngay bằng LibreOffice.  
+**Quan trọng:** Trước khi sử dụng, bạn **BẮT BUỘC** phải gọi  
+`UtilsOffice.registerDocumentPicker()` một lần trong `onCreate()` của Activity để đăng ký launcher.
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 1. Đăng ký document picker một lần duy nhất
+        UtilsOffice.registerDocumentPicker()
+
+        // 2. Gán sự kiện cho nút mở document picker
+        findViewById<Button>(R.id.pickButton).setOnClickListener {
+            // Chỉ khởi chạy (launch) ở đây
+            UtilsOffice.pickAndOpenDocument()
+        }
+    }
+}
+```
+
+---
+
+#### 🔹 5. Mở file và lắng nghe sự kiện khi LibreOffice đóng  
+
 Dùng khi bạn cần thực hiện một hành động sau khi người dùng đóng tài liệu LibreOffice,  
 ví dụ như làm mới UI, lưu log, hoặc gửi dữ liệu analytics.
 
@@ -121,4 +161,3 @@ UtilsOffice.openFile(uri) {
     Toast.makeText(this, "LibreOffice đã đóng, làm mới giao diện...", Toast.LENGTH_SHORT).show()
 }
 ```
-
