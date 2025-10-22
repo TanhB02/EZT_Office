@@ -160,4 +160,5 @@ ví dụ như làm mới UI, lưu log, hoặc gửi dữ liệu analytics.
 UtilsOffice.openFile(uri) {
     Toast.makeText(this, "LibreOffice đã đóng, làm mới giao diện...", Toast.LENGTH_SHORT).show()
 }
-```
+
+
