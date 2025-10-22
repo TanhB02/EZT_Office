@@ -51,7 +51,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONException
 import org.json.JSONObject
 import org.libreoffice.androidlib.lok.LokClipboardData
-import org.libreoffice.androidlib.utils.UtilsOffice
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -115,10 +114,6 @@ class LOActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Load native library from zip first
-        loadNativeLibrary(this)
-
         this.savedInstanceState = savedInstanceState
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -676,7 +671,8 @@ class LOActivity : AppCompatActivity() {
 
     /** Show the Saving progress and finish the app.  */
     fun finishWithProgress() {
-        if (!documentLoaded) {
+        finishAndRemoveTask()
+/*        if (!documentLoaded) {
             finishAndRemoveTask()
             return
         }
@@ -697,11 +693,12 @@ class LOActivity : AppCompatActivity() {
                 })
                 finishAndRemoveTask()
             }
-        })
+        })*/
     }
 
     override fun onBackPressed() {
-        if (!documentLoaded) {
+        finishAndRemoveTask()
+/*        if (!documentLoaded) {
             finishAndRemoveTask()
             return
         }
@@ -715,7 +712,7 @@ class LOActivity : AppCompatActivity() {
             return
         }
 
-        finishWithProgress()
+        finishWithProgress()*/
     }
 
     private fun loadDocument() {
@@ -1496,58 +1493,8 @@ class LOActivity : AppCompatActivity() {
                 .hasSystemFeature("org.chromium.arc.device_management")
         }
 
-        private var libraryLoaded = false
-
-        /**
-         * Load native libraries that were previously extracted from zip
-         * This should be called early in the Activity lifecycle (e.g., in onCreate)
-         * The libraries must be extracted first in LibreOfficeUIActivity
-         */
-        @JvmStatic
-        fun loadNativeLibrary(context: Context) {
-            if (libraryLoaded) {
-                return
-            }
-
-            try {
-                // Load liblo-native-code first (dependency of libandroidapp)
-                val loNativeSuccess = UtilsOffice.loadExtractedLibrary(context, "lo-native-code")
-                if (loNativeSuccess) {
-                    Log.i(TAG, "Successfully loaded lo-native-code from extracted file")
-                } else {
-                    Log.w(TAG, "Extracted lo-native-code not found, trying standard loading")
-                    try {
-                        System.loadLibrary("lo-native-code")
-                    } catch (e: UnsatisfiedLinkError) {
-                        Log.w(TAG, "lo-native-code not found in standard location either")
-                    }
-                }
-
-                // Load libandroidapp
-                val androidAppSuccess = UtilsOffice.loadExtractedLibrary(context, "androidapp")
-                if (androidAppSuccess) {
-                    Log.i(TAG, "Successfully loaded androidapp from extracted file")
-                    libraryLoaded = true
-                } else {
-                    // Fallback to standard loading if extracted library not found
-                    Log.w(TAG, "Extracted androidapp not found, trying standard System.loadLibrary")
-                    System.loadLibrary("androidapp")
-                    libraryLoaded = true
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to load library: ${e.message}")
-                // Last resort: try standard loading
-                try {
-                    System.loadLibrary("androidapp")
-                    libraryLoaded = true
-                } catch (e2: Exception) {
-                    Log.e(TAG, "All library loading methods failed: ${e2.message}")
-                    throw e2
-                }
-            }
-        }
         init {
-            // Library will be loaded in onCreate via loadNativeLibrary()
+            System.loadLibrary("androidapp")
         }
 
         /**
@@ -1589,4 +1536,3 @@ class LOActivity : AppCompatActivity() {
         }
     }
 } /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
-

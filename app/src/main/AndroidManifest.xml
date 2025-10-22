@@ -28,7 +28,7 @@
 
         <!-- Document Browser Activity -->
         <activity
-            android:name=".ui.LibreOfficeUIActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
             android:exported="true"
             android:process=":loactivity">

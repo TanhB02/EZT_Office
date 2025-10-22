@@ -21,8 +21,6 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.TextUtils
@@ -38,7 +36,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -59,19 +56,12 @@ import com.google.android.material.navigation.NavigationView
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
-import org.libreoffice.androidlib.utils.UtilsOffice
 import org.libreoffice.androidlib.utils.UtilsOffice.createNewFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
 import java.io.FilenameFilter
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.util.Arrays
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 class LibreOfficeUIActivity : AppCompatActivity() {
     private val LOGTAG: String = LibreOfficeUIActivity::class.java.getSimpleName()
     private var prefs: SharedPreferences? = null
@@ -112,22 +102,6 @@ class LibreOfficeUIActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(mode)
         super.onCreate(savedInstanceState)
         Log.d("TANHXXXX =>>>>>", " oncreate")
-
-        // Extract native libraries from zip in background thread (one-time operation)
-        CoroutineScope(Dispatchers.Main).launch {
-            // Show toast on UI thread
-            Toast.makeText(this@LibreOfficeUIActivity, "Preparing libraries...", Toast.LENGTH_SHORT).show()
-
-            // Run extraction on IO thread (optimized for disk operations)
-            withContext(Dispatchers.IO) {
-                UtilsOffice.extractLibraryFromZip(this@LibreOfficeUIActivity, "liblo-native-code.zip", "lo-native-code")
-                UtilsOffice.extractLibraryFromZip(this@LibreOfficeUIActivity, "libandroidapp.zip", "androidapp")
-            }
-
-            // Back to UI thread after extraction
-            Log.d("TANHXXXX =>>>>>", "Libraries extracted, continuing init")
-        }
-
         // initialize document provider factory
         //DocumentProviderFactory.initialize(this);
         //documentProviderFactory = DocumentProviderFactory.getInstance();

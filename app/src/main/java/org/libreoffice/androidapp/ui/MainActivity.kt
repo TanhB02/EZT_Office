@@ -3,13 +3,17 @@ package org.libreoffice.androidapp.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidapp.databinding.ActivityMainBinding
 import org.libreoffice.androidlib.utils.*
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
+import org.libreoffice.androidlib.utils.UtilsOffice.ProcessState
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
