@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import org.libreoffice.androidapp.databinding.ActivityMainBinding
 import org.libreoffice.androidlib.utils.OtherExt.logD
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
+import org.libreoffice.androidlib.utils.UtilsOffice.pickAndOpenDocument
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupSubmitButton()
+        pickAndOpenDocument()
     }
 
     private fun setupSubmitButton() {

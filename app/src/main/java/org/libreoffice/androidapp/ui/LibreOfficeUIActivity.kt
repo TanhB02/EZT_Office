@@ -452,20 +452,11 @@ class LibreOfficeUIActivity : AppCompatActivity() {
     /** Start an ACTION_OPEN_DOCUMENT Intent to trigger opening a document.  */
     private fun openDocument() {
         collapseFabMenu()
-
         val i = Intent()
         i.addCategory(Intent.CATEGORY_OPENABLE)
 
-        // set only the allowed mime types
-        // NOTE: If updating the list here, also check the AndroidManifest.xml,
-        // I didn't find a way how to do it from one central place :-(
         i.setType("*/*")
 
-        // from some reason, the file picker on ChromeOS is confused when it
-        // gets the EXTRA_MIME_TYPES; to the user it looks like it is
-        // impossible to choose any files, unless they notice the dropdown in
-        // the bottom left and choose "All files".  Interestingly, SVG / SVGZ
-        // are shown there as an option, the other mime types are just blank
         if (!LOActivity.isChromeOS(this)) {
             val mimeTypes: Array<String> = arrayOf( // ODF
                 "application/vnd.oasis.opendocument.text",
@@ -518,9 +509,6 @@ class LibreOfficeUIActivity : AppCompatActivity() {
             i.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         }
 
-        // TODO remember where the user picked the file the last time
-        // TODO and that should default to Context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        //i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, previousDirectoryPath);
         try {
             i.setAction(Intent.ACTION_OPEN_DOCUMENT)
             startActivityForResult(i, OPEN_FILE_REQUEST_CODE)
@@ -531,7 +519,6 @@ class LibreOfficeUIActivity : AppCompatActivity() {
                 "Start of activity with ACTION_OPEN_DOCUMENT failed (no activity found). Trying the fallback."
             )
         }
-        // Fallback
         i.setAction(Intent.ACTION_GET_CONTENT)
         startActivityForResult(i, OPEN_FILE_REQUEST_CODE)
     }

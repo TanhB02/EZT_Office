@@ -1,25 +1,25 @@
 package org.libreoffice.androidlib.utils
 
-import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.libreoffice.androidlib.Intent_Killed_Process
+import org.libreoffice.androidlib.utils.OtherExt.documentPickerLauncher
 import org.libreoffice.androidlib.utils.OtherExt.getIntentToEdit
 import org.libreoffice.androidlib.utils.OtherExt.logD
+import org.libreoffice.androidlib.utils.OtherExt.mimeTypes
 import org.libreoffice.androidlib.utils.OtherExt.registerCloseReceiver
+import org.libreoffice.androidlib.utils.OtherExt.registerDocumentPicker
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
 object UtilsOffice {
-    const val XLSX = "xlsx"
-    const val DOCX = "docx"
-    const val PPTX = "pptx"
+
     @JvmStatic
-    fun Activity.openFile(uri: Uri?,onClosed: (() -> Unit)? = null) {
+    fun AppCompatActivity.openFile(uri: Uri?,onClosed: (() -> Unit)? = null) {
         if (uri == null) return
         contentResolver.takePersistableUriPermission(
             uri,
@@ -30,7 +30,7 @@ object UtilsOffice {
         startActivity(i)
     }
 
-    suspend fun Context.createNewFile(uri: Uri, fileType: String? = XLSX) {
+    suspend fun Context.createNewFile(uri: Uri, fileType: String? = "xlsx") {
         withContext(Dispatchers.IO) {
             try {
                 assets.open("templates/untitled.$fileType").use { input ->
@@ -43,6 +43,29 @@ object UtilsOffice {
             }
         }
     }
+
+
+    fun AppCompatActivity.openSystemPicker() {
+        try {
+            documentPickerLauncher?.launch(mimeTypes)
+        } catch (_: ActivityNotFoundException) {
+            logD("ACTION_OPEN_DOCUMENT failed, fallback to ACTION_GET_CONTENT")
+            val fallback = Intent(Intent.ACTION_GET_CONTENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+            }
+            startActivity(fallback)
+        }
+    }
+
+    fun AppCompatActivity.pickAndOpenDocument() {
+        if (documentPickerLauncher == null) {
+            registerDocumentPicker()
+        }
+        openSystemPicker()
+    }
+
 
 
 }
