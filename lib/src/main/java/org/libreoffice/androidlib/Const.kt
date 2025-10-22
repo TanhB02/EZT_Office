@@ -1,0 +1,3 @@
+package org.libreoffice.androidlib
+
+const val Intent_Killed_Process = "org.libreoffice.ACTION_KILLED_PROCESS"

@@ -1,4 +1,3 @@
-
 package org.libreoffice.androidlib
 
 import android.Manifest
@@ -51,6 +50,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONException
 import org.json.JSONObject
 import org.libreoffice.androidlib.lok.LokClipboardData
+import org.libreoffice.androidlib.utils.OtherExt.logD
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -671,6 +671,7 @@ class LOActivity : AppCompatActivity() {
 
     /** Show the Saving progress and finish the app.  */
     fun finishWithProgress() {
+        sendBroadcastMessage()
         finishAndRemoveTask()
 /*        if (!documentLoaded) {
             finishAndRemoveTask()
@@ -696,23 +697,14 @@ class LOActivity : AppCompatActivity() {
         })*/
     }
 
+    private fun sendBroadcastMessage() {
+        sendBroadcast(Intent(Intent_Killed_Process))
+    }
+
+
     override fun onBackPressed() {
+        sendBroadcastMessage()
         finishAndRemoveTask()
-/*        if (!documentLoaded) {
-            finishAndRemoveTask()
-            return
-        }
-
-        if (mMobileWizardVisible) {
-            // just return one level up in the mobile-wizard (or close it)
-            callFakeWebsocketOnMessage("mobile: mobilewizardback")
-            return
-        } else if (mIsEditModeActive) {
-            callFakeWebsocketOnMessage("mobile: readonlymode")
-            return
-        }
-
-        finishWithProgress()*/
     }
 
     private fun loadDocument() {
@@ -1081,14 +1073,14 @@ class LOActivity : AppCompatActivity() {
             getString(R.string.view_only),
             object : DialogInterface.OnClickListener {
                 override fun onClick(dialogInterface: DialogInterface?, i: Int) {
-                    if (canBeExported) Companion.createNewFileInputDialog(
+                    if (canBeExported) createNewFileInputDialog(
                         mActivity!!, getFileName(true),
                         this@LOActivity.mimeType, REQUEST_COPY
                     )
                     else {
                         val extension = getOdfExtensionForDocType(this@LOActivity.mimeType)
                         if (extension != null) {
-                            Companion.createNewFileInputDialog(
+                            createNewFileInputDialog(
                                 mActivity!!,
                                 getFileName(false) + "." + extension,
                                 getMimeForFormat(extension),
@@ -1133,7 +1125,7 @@ class LOActivity : AppCompatActivity() {
             object : DialogInterface.OnClickListener {
                 override fun onClick(dialogInterface: DialogInterface?, i: Int) {
                     if (ext != null) {
-                        Companion.createNewFileInputDialog(
+                        createNewFileInputDialog(
                             mActivity!!, getFileName(false) + "." + ext, getMimeForFormat(
                                 ext
                             ), REQUEST_COPY

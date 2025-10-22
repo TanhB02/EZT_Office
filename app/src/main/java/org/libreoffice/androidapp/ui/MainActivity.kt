@@ -1,19 +1,13 @@
 package org.libreoffice.androidapp.ui
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import org.libreoffice.androidapp.R
 import org.libreoffice.androidapp.databinding.ActivityMainBinding
-import org.libreoffice.androidlib.utils.*
+import org.libreoffice.androidlib.utils.OtherExt.logD
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
-import org.libreoffice.androidlib.utils.UtilsOffice.ProcessState
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -38,7 +32,9 @@ class MainActivity : AppCompatActivity() {
 
                 try {
                     val uri = Uri.parse(uriString)
-                    openFile( uri)
+                    openFile( uri){
+                        logD("TANHXXXX =>>>>> kill process")
+                    }
                 } catch (e: Exception) {
                     Toast.makeText(
                         this@MainActivity,
@@ -50,15 +46,4 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == LibreOfficeUIActivity.LO_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "File đã được xử lý thành công!", Toast.LENGTH_SHORT).show()
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Người dùng đã hủy thao tác.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 }

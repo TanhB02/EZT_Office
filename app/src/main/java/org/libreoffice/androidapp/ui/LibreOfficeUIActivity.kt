@@ -56,6 +56,7 @@ import com.google.android.material.navigation.NavigationView
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
+import org.libreoffice.androidlib.utils.OtherExt.logD
 import org.libreoffice.androidlib.utils.UtilsOffice.createNewFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
@@ -634,29 +635,15 @@ class LibreOfficeUIActivity : AppCompatActivity() {
 
                 val uri = data.getData()
                 if (uri == null) return
-
-                getContentResolver().takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-
                 openFile(uri)
             }
 
             CREATE_DOCUMENT_REQUEST_CODE, CREATE_SPREADSHEET_REQUEST_CODE, CREATE_PRESENTATION_REQUEST_CODE -> {
                 if (resultCode != RESULT_OK || data == null) return
-
-                val uri = data.getData()
-                getContentResolver().takePersistableUriPermission(
-                    uri!!,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-
                 val extension =
                     if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) "docx" else (if (requestCode == CREATE_SPREADSHEET_REQUEST_CODE) "xlsx" else "pptx")
-                createNewFile(uri, extension)
-
-                openFile(uri)
+                createNewFile(data.getData()!!, extension)
+                openFile(data.getData())
             }
         }
     }
