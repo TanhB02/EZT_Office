@@ -1,6 +1,6 @@
 # EZT_Office
 
-## 📚 Contents
+## 📚 Content
 
 - 🚀 [Install](#-install)
 - ⚙️ [Setup Library](#-setup-library)
@@ -121,5 +121,4 @@ UtilsOffice.openFile(uri) {
     Toast.makeText(this, "LibreOffice đã đóng, làm mới giao diện...", Toast.LENGTH_SHORT).show()
 }
 ```
-
 
