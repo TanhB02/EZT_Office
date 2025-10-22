@@ -59,7 +59,6 @@ import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
 import org.libreoffice.androidlib.utils.OtherExt.logD
-import org.libreoffice.androidlib.utils.UtilsOffice.createNewFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
 import java.io.FilenameFilter
@@ -632,7 +631,8 @@ class LibreOfficeUIActivity : AppCompatActivity() {
                 val extension =
                     if (requestCode == CREATE_DOCUMENT_REQUEST_CODE) "docx" else (if (requestCode == CREATE_SPREADSHEET_REQUEST_CODE) "xlsx" else "pptx")
                lifecycleScope.launch {
-                   createNewFile(data.getData()!!, extension)
+                   //TODo TanhX check
+                  /* createNewFile(data.getData()!!, extension)*/
                }
                 openFile(data.getData())
             }

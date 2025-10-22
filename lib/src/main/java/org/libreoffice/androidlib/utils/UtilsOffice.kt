@@ -13,7 +13,19 @@ import org.libreoffice.androidlib.utils.OtherExt.getIntentToEdit
 import org.libreoffice.androidlib.utils.OtherExt.logD
 import org.libreoffice.androidlib.utils.OtherExt.mimeTypes
 import org.libreoffice.androidlib.utils.OtherExt.registerCloseReceiver
-import org.libreoffice.androidlib.utils.OtherExt.registerDocumentPicker
+import android.content.ContentValues
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.libreoffice.androidlib.utils.OtherExt.createFileFromTemplate
+import org.libreoffice.androidlib.utils.OtherExt.prepareFileCreationValues
+import java.io.File
 import java.io.IOException
 
 object UtilsOffice {
@@ -21,30 +33,28 @@ object UtilsOffice {
     @JvmStatic
     fun AppCompatActivity.openFile(uri: Uri?,onClosed: (() -> Unit)? = null) {
         if (uri == null) return
-        contentResolver.takePersistableUriPermission(
-            uri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
+        try {
+            contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }catch (_: Exception){ }
         registerCloseReceiver(Intent_Killed_Process,onClosed)
-        val i = getIntentToEdit(this, uri)
-        startActivity(i)
+        startActivity(getIntentToEdit(this, uri))
     }
 
-    suspend fun Context.createNewFile(uri: Uri, fileType: String? = "xlsx") {
-        withContext(Dispatchers.IO) {
-            try {
-                assets.open("templates/untitled.$fileType").use { input ->
-                    contentResolver.openOutputStream(uri)?.use { output ->
-                        input.copyTo(output)
-                    } ?: error("Cannot open output stream for $uri")
-                }
-            } catch (e: IOException) {
-                logD("TANHXXXX =>>>>> message:${e.message}")
-            }
-        }
+    suspend fun AppCompatActivity.createFile(
+        fileName: String,
+        fileType: String = "xlsx",
+        onClosed: (() -> Unit)? = null
+    ) {
+        val contentValues = prepareFileCreationValues(fileName, fileType)
+        val newFileUri = createFileFromTemplate(this, contentValues, fileType)
+        if (newFileUri == null) return
+        this.openFile(newFileUri, onClosed)
     }
 
-
+    //TODO Trong activity gọi phải gọi registerDocumentPicker
     fun AppCompatActivity.openSystemPicker() {
         try {
             documentPickerLauncher?.launch(mimeTypes)
@@ -59,13 +69,15 @@ object UtilsOffice {
         }
     }
 
-    fun AppCompatActivity.pickAndOpenDocument() {
-        if (documentPickerLauncher == null) {
-            registerDocumentPicker()
+    fun AppCompatActivity.registerDocumentPicker() {
+        documentPickerLauncher = registerForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri: Uri? ->
+            uri?.let {
+                openFile(it)
+            }
         }
-        openSystemPicker()
     }
-
 
 
 }

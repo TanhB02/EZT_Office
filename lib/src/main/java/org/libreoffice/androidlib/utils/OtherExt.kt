@@ -4,19 +4,25 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.libreoffice.androidlib.BuildConfig
 import org.libreoffice.androidlib.Intent_Killed_Process
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
+import java.io.File
 
 object OtherExt {
 
@@ -24,15 +30,7 @@ object OtherExt {
     var documentPickerLauncher: ActivityResultLauncher<Array<String>>? = null
 
 
-    fun AppCompatActivity.registerDocumentPicker() {
-        documentPickerLauncher = registerForActivityResult(
-            ActivityResultContracts.OpenDocument()
-        ) { uri: Uri? ->
-            uri?.let {
-                openFile(it)
-            }
-        }
-    }
+
     fun getIntentToEdit(activity: Activity, uri: Uri?): Intent {
         val i = Intent(Intent.ACTION_EDIT, uri)
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -63,6 +61,75 @@ object OtherExt {
         } else {
             @Suppress("DEPRECATION")
             registerReceiver(receiver, filter)
+        }
+    }
+
+    fun prepareFileCreationValues(fileName: String, fileType: String): ContentValues {
+        val mimeType = when (fileType.lowercase()) {
+            "xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            "pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            else -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+
+        val fullFileName = "$fileName.$fileType"
+
+        return ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fullFileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            } else {
+                @Suppress("DEPRECATION")
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!downloadsDir.exists()) {
+                    downloadsDir.mkdirs()
+                }
+                val filePath = File(downloadsDir, fullFileName).absolutePath
+                put(MediaStore.MediaColumns.DATA, filePath)
+            }
+        }
+    }
+
+    suspend fun createFileFromTemplate(
+        context: Context,
+        contentValues: ContentValues,
+        fileType: String
+    ): Uri? {
+        return withContext(Dispatchers.IO) {
+            var newFileUri: Uri? = null
+            try {
+                val collection: Uri
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                } else {
+                    @Suppress("DEPRECATION")
+                    collection = MediaStore.Files.getContentUri("external")
+                }
+
+                newFileUri = context.contentResolver.insert(collection, contentValues)
+                    ?: error("Không thể tạo MediaStore entry")
+
+                context.assets.open("templates/untitled.$fileType").use { input ->
+                    context.contentResolver.openOutputStream(newFileUri)?.use { output ->
+                        input.copyTo(output)
+                    } ?: error("Không thể mở output stream cho $newFileUri")
+                }
+                newFileUri
+
+            } catch (e: Exception) {
+                logD("TANHXXXX =>>>>> Lỗi khi tạo file: ${e.message}")
+
+                newFileUri?.let {
+                    try {
+                        context.contentResolver.delete(it, null, null)
+                    } catch (deleteEx: Exception) {
+                        logD("TANHXXXX =>>>>> Lỗi khi dọn dẹp file: ${deleteEx.message}")
+                    }
+                }
+                null
+            }
         }
     }
 
