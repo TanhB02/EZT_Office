@@ -142,7 +142,7 @@ afterEvaluate {
                 name = "TanhB02"
                 url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
                 credentials {
-                    username = TanhB02
+                    username = System.getenv("GITHUB_ACTOR") ?: project.properties["gpr.user"] as String
                     password = System.getenv("GITHUB_TOKEN") ?: project.properties["gpr.token"] as String
                 }
             }
