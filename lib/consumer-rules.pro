@@ -28,12 +28,19 @@
 -dontwarn android.webkit.**
 -dontwarn org.libreoffice.**
 
-# Keep LibreOffice web assets
--keep class * extends android.app.Activity {
-    public void *(android.webkit.WebView);
+# Keep Facebook Shimmer library classes
+-keep class com.facebook.shimmer.** { *; }
+-dontwarn com.facebook.shimmer.**
+
+# Keep ShimmerFrameLayout specifically
+-keep class com.facebook.shimmer.ShimmerFrameLayout { *; }
+
+# Keep all methods and fields in ShimmerFrameLayout
+-keepclassmembers class com.facebook.shimmer.ShimmerFrameLayout {
+    public *;
+    protected *;
 }
 
-# Keep web resources that are loaded via file:///android_asset/
--keepclassmembers class * {
-    public static *** getAssetManager(...);
-}
+# Keep Shimmer namespace attributes
+-keep class **.R$attr { *; }
+-keep class **.R$styleable { *; }

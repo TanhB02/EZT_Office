@@ -16,8 +16,8 @@ android {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
             credentials {
-                username = providers.gradleProperty("gpr.user").orElse(System.getenv("GITHUB_ACTOR") ?: "").get()
-                password = providers.gradleProperty("gpr.token").orElse(System.getenv("GITHUB_TOKEN") ?: "").get()
+                username = "TanhB02"
+                password = "***REMOVED***"
             }
         }
     }
@@ -93,13 +93,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-//    implementation "ezt.documents:libreoffice:1.0.0-beta13"
+    implementation("ezt.documents:libreoffice:1.0.0-beta4")
 
-    implementation project(path: ':lib')
+
+//    implementation project(path: ':lib')
     implementation 'com.google.android.gms:play-services-measurement-api:23.0.0'
     implementation 'com.google.android.gms:play-services-ads-api:24.7.0'
 
     implementation 'com.adjust.sdk:adjust-android:4.33.1'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }
 
 tasks.register('copyBrandFiles', Copy) {

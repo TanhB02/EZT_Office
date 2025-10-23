@@ -75,6 +75,15 @@
 -dontwarn java.lang.invoke.MethodHandles$Lookup
 -dontwarn java.lang.invoke.MethodType
 
-# Keep Android classes that might use invoke
--keep class android.** { *; }
--keep class androidx.** { *; }
+# Keep Facebook Shimmer library classes
+-keep class com.facebook.shimmer.** { *; }
+-dontwarn com.facebook.shimmer.**
+
+# Keep ShimmerFrameLayout specifically
+-keep class com.facebook.shimmer.ShimmerFrameLayout { *; }
+
+# Keep all methods and fields in ShimmerFrameLayout
+-keepclassmembers class com.facebook.shimmer.ShimmerFrameLayout {
+    public *;
+    protected *;
+}
