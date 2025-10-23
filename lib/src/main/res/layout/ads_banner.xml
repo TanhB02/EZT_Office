@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/banner_ad"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_gravity="bottom|center"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/view_d"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#7C0C5DAE" />
+
+    <include android:id="@+id/shimmer_layout"
+        layout="@layout/ads_shimmer_banner" />
+
+    <LinearLayout
+        android:id="@+id/adView_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="1dp"
+        android:gravity="bottom|center"
+        android:orientation="vertical"
+        android:visibility="gone" />
+</FrameLayout>

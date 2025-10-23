@@ -4,62 +4,62 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.libreoffice.androidlib.Intent_Killed_Process
-import org.libreoffice.androidlib.utils.OtherExt.documentPickerLauncher
-import org.libreoffice.androidlib.utils.OtherExt.getIntentToEdit
-import org.libreoffice.androidlib.utils.OtherExt.logD
-import org.libreoffice.androidlib.utils.OtherExt.mimeTypes
-import org.libreoffice.androidlib.utils.OtherExt.registerCloseReceiver
-import android.content.ContentValues
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.libreoffice.androidlib.utils.OtherExt.createFileFromTemplate
-import org.libreoffice.androidlib.utils.OtherExt.prepareFileCreationValues
-import java.io.File
-import java.io.IOException
+import androidx.appcompat.app.AppCompatActivity
+import org.libreoffice.androidlib.Intent_Killed_Process
+import org.libreoffice.androidlib.utils.DocumentManager.createFileFromTemplate
+import org.libreoffice.androidlib.utils.DocumentManager.documentPickerLauncher
+import org.libreoffice.androidlib.utils.DocumentManager.getIntentToEdit
+import org.libreoffice.androidlib.utils.DocumentManager.logD
+import org.libreoffice.androidlib.utils.DocumentManager.mimeTypes
+import org.libreoffice.androidlib.utils.DocumentManager.pendingDocumentCallback
+import org.libreoffice.androidlib.utils.DocumentManager.prepareFileCreationValues
+import org.libreoffice.androidlib.utils.DocumentManager.registerCloseReceiver
+import org.libreoffice.androidlib.utils.Preferences.bannerAdsId
+import org.libreoffice.androidlib.utils.Preferences.init
+import org.libreoffice.androidlib.utils.Preferences.showAds
 
 object UtilsOffice {
 
+    fun AppCompatActivity.setIDAdsBanner(idAdsBanner: String) {
+        init(this)
+        bannerAdsId = idAdsBanner
+    }
+
+    fun AppCompatActivity.setStateShowAds(stateShowAds: Boolean) {
+        init(this)
+        showAds = stateShowAds
+    }
     @JvmStatic
-    fun AppCompatActivity.openFile(uri: Uri?,onClosed: (() -> Unit)? = null) {
-        if (uri == null) return
+    fun AppCompatActivity.openFile(uri: Uri, callback: DocumentCallback) {
         try {
             contentResolver.takePersistableUriPermission(
                 uri,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
-        }catch (_: Exception){ }
-        registerCloseReceiver(Intent_Killed_Process,onClosed)
+        } catch (_: Exception) { }
+
+        registerCloseReceiver(Intent_Killed_Process, callback)
         startActivity(getIntentToEdit(this, uri))
     }
+
 
     suspend fun AppCompatActivity.createFile(
         fileName: String,
         fileType: String = "xlsx",
-        onClosed: (() -> Unit)? = null
+        callback: DocumentCallback
     ) {
         val contentValues = prepareFileCreationValues(fileName, fileType)
         val newFileUri = createFileFromTemplate(this, contentValues, fileType)
-        if (newFileUri == null) return
-        this.openFile(newFileUri, onClosed)
+        newFileUri?.let { openFile(it, callback) }
     }
 
-    //TODO Trong activity gọi phải gọi registerDocumentPicker
-    fun AppCompatActivity.openSystemPicker() {
+
+    fun AppCompatActivity.openSystemPicker(callback: DocumentCallback) {
+        pendingDocumentCallback = callback
         try {
             documentPickerLauncher?.launch(mimeTypes)
         } catch (_: ActivityNotFoundException) {
-            logD("ACTION_OPEN_DOCUMENT failed, fallback to ACTION_GET_CONTENT")
             val fallback = Intent(Intent.ACTION_GET_CONTENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "*/*"
@@ -72,12 +72,18 @@ object UtilsOffice {
     fun AppCompatActivity.registerDocumentPicker() {
         documentPickerLauncher = registerForActivityResult(
             ActivityResultContracts.OpenDocument()
-        ) { uri: Uri? ->
+        ) { uri ->
+            logD("TANHXXXX =>>>>> uri:${uri}")
             uri?.let {
-                openFile(it)
+                pendingDocumentCallback?.let { callback ->
+                    openFile(it, callback)
+                    pendingDocumentCallback = null
+                }
             }
         }
     }
+
+
 
 
 }

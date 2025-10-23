@@ -42,6 +42,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebChromeClient.FileChooserParams
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
@@ -49,8 +50,11 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import org.json.JSONException
 import org.json.JSONObject
+import org.libreoffice.androidlib.ads.BannerAds.initBannerAds
+import org.libreoffice.androidlib.databinding.LolibActivityMainBinding
 import org.libreoffice.androidlib.lok.LokClipboardData
-import org.libreoffice.androidlib.utils.OtherExt.logD
+import org.libreoffice.androidlib.utils.DocumentManager.logD
+import org.libreoffice.androidlib.utils.Preferences
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -69,6 +73,7 @@ import java.nio.channels.ReadableByteChannel
 import java.nio.charset.Charset
 
 class LOActivity : AppCompatActivity() {
+    private lateinit var binding: LolibActivityMainBinding
     private var mTempFile: File? = null
 
     private var providerId = 0
@@ -112,16 +117,20 @@ class LOActivity : AppCompatActivity() {
             return mMainHandler!!
         }
 
+    @RequiresPermission(Manifest.permission.INTERNET)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
+        Preferences.init(this@LOActivity)
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+        binding = LolibActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setContentView(R.layout.lolib_activity_main)
         mProgressDialog = ProgressDialog(this)
         this.mActivity = this
         init()
+        initBannerAds(this@LOActivity, binding.banner.root)
     }
 
     /** Initialize the app - copy the assets and create the UI.  */
@@ -673,28 +682,6 @@ class LOActivity : AppCompatActivity() {
     fun finishWithProgress() {
         sendBroadcastMessage()
         finishAndRemoveTask()
-/*        if (!documentLoaded) {
-            finishAndRemoveTask()
-            return
-        }
-        mProgressDialog!!.indeterminate(R.string.exiting)
-
-        // The 'BYE' takes a considerable amount of time, we need to post it
-        // so that it starts after the saving progress is actually shown
-        this.mainHandler.post(object : Runnable {
-            override fun run() {
-                documentLoaded = false
-                postMobileMessageNative("BYE")
-
-                //copyTempBackToIntent();
-                runOnUiThread(object : Runnable {
-                    override fun run() {
-                        mProgressDialog!!.dismiss()
-                    }
-                })
-                finishAndRemoveTask()
-            }
-        })*/
     }
 
     private fun sendBroadcastMessage() {

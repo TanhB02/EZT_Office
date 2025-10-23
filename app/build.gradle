@@ -96,16 +96,10 @@ dependencies {
 //    implementation "ezt.documents:libreoffice:1.0.0-beta13"
 
     implementation project(path: ':lib')
+    implementation 'com.google.android.gms:play-services-measurement-api:23.0.0'
+    implementation 'com.google.android.gms:play-services-ads-api:24.7.0'
 
-    // https://stackoverflow.com/questions/75263047/duplicate-class-in-kotlin-android
-    constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
-            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-        }
-    }
+    implementation 'com.adjust.sdk:adjust-android:4.33.1'
 }
 
 tasks.register('copyBrandFiles', Copy) {

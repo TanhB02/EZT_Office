@@ -1,0 +1,62 @@
+<com.facebook.shimmer.ShimmerFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loading_view_banner"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <LinearLayout
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardBackgroundColor="#455A64"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="0dp"
+                android:layout_marginVertical="2dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="MissingConstraints" />
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="3dp"
+                    android:background="#455A64"
+                    app:layout_constraintEnd_toEndOf="@+id/ad_headline"
+                    app:layout_constraintStart_toEndOf="@+id/icon_card"
+                    app:layout_constraintTop_toBottomOf="@+id/ad_headline" />
+
+                <View
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:lines="1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="#455A64"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/icon_card"
+                    app:layout_constraintTop_toTopOf="@+id/icon_card" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

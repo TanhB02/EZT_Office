@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
 import org.libreoffice.androidlib.LOActivityLauncher
-import org.libreoffice.androidlib.utils.OtherExt.logD
+import org.libreoffice.androidlib.utils.DocumentCallback
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
 import java.io.FilenameFilter
@@ -311,7 +311,19 @@ class LibreOfficeUIActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         when (item.getItemId()) {
             R.id.context_menu_open -> {
-                openFile(currentlySelectedFile)
+                openFile(currentlySelectedFile!!,object : DocumentCallback{
+                    override fun onDocumentClosed() {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onAdRevenueReceived(
+                        valueMicros: Long,
+                        currencyCode: String,
+                        precisionType: Int
+                    ) {
+                        TODO("Not yet implemented")
+                    }
+                })
                 return true
             }
 
@@ -623,7 +635,19 @@ class LibreOfficeUIActivity : AppCompatActivity() {
 
                 val uri = data.getData()
                 if (uri == null) return
-                openFile(uri)
+                openFile(uri,object : DocumentCallback{
+                    override fun onDocumentClosed() {
+
+                    }
+
+                    override fun onAdRevenueReceived(
+                        valueMicros: Long,
+                        currencyCode: String,
+                        precisionType: Int
+                    ) {
+
+                    }
+                })
             }
 
             CREATE_DOCUMENT_REQUEST_CODE, CREATE_SPREADSHEET_REQUEST_CODE, CREATE_PRESENTATION_REQUEST_CODE -> {
@@ -634,7 +658,19 @@ class LibreOfficeUIActivity : AppCompatActivity() {
                    //TODo TanhX check
                   /* createNewFile(data.getData()!!, extension)*/
                }
-                openFile(data.getData())
+                openFile(data.getData()!!,object : DocumentCallback{
+                    override fun onDocumentClosed() {
+
+                    }
+
+                    override fun onAdRevenueReceived(
+                        valueMicros: Long,
+                        currencyCode: String,
+                        precisionType: Int
+                    ) {
+
+                    }
+                })
             }
         }
     }

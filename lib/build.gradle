@@ -80,6 +80,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     splits {
@@ -109,14 +110,8 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
-    constraints {
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0") {
-            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
-        }
-    }
+    implementation 'com.google.android.gms:play-services-ads-api:24.7.0'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }
 afterEvaluate {
     publishing {
@@ -124,7 +119,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta29"
+                version = "1.0.0-beta2"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 
@@ -147,7 +142,7 @@ afterEvaluate {
                 name = "TanhB02"
                 url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
                 credentials {
-                    username = System.getenv("GITHUB_ACTOR") ?: project.properties["gpr.user"] as String
+                    username = TanhB02
                     password = System.getenv("GITHUB_TOKEN") ?: project.properties["gpr.token"] as String
                 }
             }

@@ -18,6 +18,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.libreoffice.androidapp.R
+import org.libreoffice.androidlib.utils.DocumentCallback
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 
 internal class RecentFilesAdapter(
@@ -66,7 +67,19 @@ internal class RecentFilesAdapter(
 
         val clickListener: View.OnClickListener = object : View.OnClickListener {
             override fun onClick(view: View?) {
-                mActivity.openFile(file.uri)
+                mActivity.openFile(file.uri!!,object : DocumentCallback{
+                    override fun onDocumentClosed() {
+
+                    }
+
+                    override fun onAdRevenueReceived(
+                        valueMicros: Long,
+                        currencyCode: String,
+                        precisionType: Int
+                    ) {
+
+                    }
+                })
                 Log.d("RecentFilesAdapter", "onClick: " + file.uri)
             }
         }

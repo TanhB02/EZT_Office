@@ -14,43 +14,45 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.libreoffice.androidlib.utils.AdRevenueManager
 import org.libreoffice.androidlib.BuildConfig
+import org.libreoffice.androidlib.utils.DocumentCallback
 import org.libreoffice.androidlib.Intent_Killed_Process
 import org.libreoffice.androidlib.LOActivity
-import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.File
 
-object OtherExt {
-
+object DocumentManager {
 
     var documentPickerLauncher: ActivityResultLauncher<Array<String>>? = null
-
+    var pendingDocumentCallback: DocumentCallback? = null
 
 
     fun getIntentToEdit(activity: Activity, uri: Uri?): Intent {
-        val i = Intent(Intent.ACTION_EDIT, uri)
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        val componentName =
-            ComponentName(activity.getPackageName(), LOActivity::class.java.getName())
-        i.setComponent(componentName)
-        return i
+        return Intent(Intent.ACTION_EDIT, uri).apply {
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            component = ComponentName(activity.packageName, LOActivity::class.java.name)
+        }
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     fun Activity.registerCloseReceiver(
         action: String = Intent_Killed_Process,
-        onClosed: (() -> Unit)? = null
+        callback: DocumentCallback
     ) {
+        AdRevenueManager.registerCallback(this, callback)
+
         val filter = IntentFilter(action)
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                onClosed?.invoke()
+                val ctx = context ?: return
+
+                callback.onDocumentClosed()
+
                 try {
+                    AdRevenueManager.unregisterCallback(ctx)
                     unregisterReceiver(this)
                 } catch (_: Exception) { }
             }
