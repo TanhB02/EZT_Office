@@ -16,7 +16,7 @@
         android:layout_height="1dp"
         android:background="#7C0C5DAE" />
 
-    <include android:id="@+id/shimmer_layout"
+    <include
         layout="@layout/ads_shimmer_banner" />
 
     <LinearLayout

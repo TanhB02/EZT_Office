@@ -15,7 +15,6 @@ import org.libreoffice.androidlib.manager.DocumentManager.getIntentToEdit
 import org.libreoffice.androidlib.manager.DocumentManager.logD
 import org.libreoffice.androidlib.manager.DocumentManager.mimeTypes
 import org.libreoffice.androidlib.manager.DocumentManager.pendingDocumentCallback
-import org.libreoffice.androidlib.manager.DocumentManager.prepareFileCreationValues
 import org.libreoffice.androidlib.manager.DocumentManager.registerCloseReceiver
 import org.libreoffice.androidlib.utils.Preferences.bannerAdsId
 import org.libreoffice.androidlib.utils.Preferences.init
@@ -56,8 +55,7 @@ object UtilsOffice {
         fileType: String = "xlsx",
         callback: DocumentCallback
     ) {
-        val contentValues = prepareFileCreationValues(fileName, fileType)
-        val newFileUri = createFileFromTemplate(context, contentValues, fileType)
+        val newFileUri = createFileFromTemplate(context, fileName, fileType)
         newFileUri?.let { openFile(context, it, callback) }
     }
 

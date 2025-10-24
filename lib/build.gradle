@@ -107,14 +107,14 @@ android {
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'com.google.android.material:material:1.13.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.2.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
-    implementation 'com.google.android.gms:play-services-ads-api:24.7.0'
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    api 'androidx.appcompat:appcompat:1.7.1'
+    api 'com.google.android.material:material:1.13.0'
+    api 'androidx.constraintlayout:constraintlayout:2.2.1'
+    api 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+    api "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
+    api 'com.google.android.gms:play-services-ads-api:24.7.0'
+    api 'com.facebook.shimmer:shimmer:0.5.0'
 }
 afterEvaluate {
     publishing {
@@ -122,14 +122,16 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta18"
+                version = "release-1.0.0"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 
                 pom.withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Include all 'api' dependencies in POM
                     configurations.api.allDependencies.each { dependency ->
-                        if (dependency.group != null && dependency.version != null) {
+                        if (dependency.group != null && dependency.version != null && dependency.name != 'unspecified') {
                             def dependencyNode = dependenciesNode.appendNode('dependency')
                             dependencyNode.appendNode('groupId', dependency.group)
                             dependencyNode.appendNode('artifactId', dependency.name)
@@ -137,13 +139,6 @@ afterEvaluate {
                             dependencyNode.appendNode('scope', 'compile')
                         }
                     }
-
-                    // Add Facebook Shimmer dependency explicitly
-                    def shimmerDep = dependenciesNode.appendNode('dependency')
-                    shimmerDep.appendNode('groupId', 'com.facebook.shimmer')
-                    shimmerDep.appendNode('artifactId', 'shimmer')
-                    shimmerDep.appendNode('version', '0.5.0')
-                    shimmerDep.appendNode('scope', 'compile')
                 }
             }
         }
@@ -153,7 +148,7 @@ afterEvaluate {
                 url = uri("https://maven.pkg.github.com/TanhB02/EZT_Office")
                 credentials {
                     username = "TanhB02"
-                    password = "***REMOVED***"
+                    password = ""
                 }
             }
         }

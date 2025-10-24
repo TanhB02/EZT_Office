@@ -64,7 +64,7 @@ object DocumentManager {
         }
     }
 
-    fun prepareFileCreationValues(fileName: String, fileType: String): ContentValues {
+    fun prepareFileCreationValues(fileName: String, fileType: String, suffix: Int = 0): ContentValues {
         val mimeType = when (fileType.lowercase()) {
             "xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -72,7 +72,11 @@ object DocumentManager {
             else -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         }
 
-        val fullFileName = "$fileName.$fileType"
+        val fullFileName = if (suffix > 0) {
+            "$fileName ($suffix).$fileType"
+        } else {
+            "$fileName.$fileType"
+        }
 
         return ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, fullFileName)
@@ -94,43 +98,63 @@ object DocumentManager {
 
     suspend fun createFileFromTemplate(
         context: Context,
-        contentValues: ContentValues,
+        fileName: String,
         fileType: String
     ): Uri? {
-        return withContext(Dispatchers.IO) {
-            var newFileUri: Uri? = null
+        var suffix = 0
+        var lastError: Exception? = null
+
+        // Try up to 100 times with different suffixes
+        while (suffix < 100) {
+            val contentValues = prepareFileCreationValues(fileName, fileType, suffix)
+
             try {
-                val collection: Uri
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-                } else {
-                    @Suppress("DEPRECATION")
-                    collection = MediaStore.Files.getContentUri("external")
-                }
+                return withContext(Dispatchers.IO) {
+                    val collection: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        MediaStore.Files.getContentUri("external")
+                    }
 
-                newFileUri = context.contentResolver.insert(collection, contentValues)
-                    ?: error("Không thể tạo MediaStore entry")
+                    val newFileUri = context.contentResolver.insert(collection, contentValues)
+                        ?: error("Không thể tạo MediaStore entry")
 
-                context.assets.open("templates/untitled.$fileType").use { input ->
-                    context.contentResolver.openOutputStream(newFileUri)?.use { output ->
-                        input.copyTo(output)
-                    } ?: error("Không thể mở output stream cho $newFileUri")
-                }
-                newFileUri
-
-            } catch (e: Exception) {
-                logD("TANHXXXX =>>>>> Lỗi khi tạo file: ${e.message}")
-
-                newFileUri?.let {
                     try {
-                        context.contentResolver.delete(it, null, null)
-                    } catch (deleteEx: Exception) {
-                        logD("TANHXXXX =>>>>> Lỗi khi dọn dẹp file: ${deleteEx.message}")
+                        context.assets.open("templates/untitled.$fileType").use { input ->
+                            context.contentResolver.openOutputStream(newFileUri)?.use { output ->
+                                input.copyTo(output)
+                            } ?: error("Không thể mở output stream cho $newFileUri")
+                        }
+                        newFileUri
+                    } catch (e: Exception) {
+                        // Clean up on error
+                        try {
+                            context.contentResolver.delete(newFileUri, null, null)
+                        } catch (deleteEx: Exception) {
+                            logD("TANHXXXX =>>>>> Lỗi khi dọn dẹp file: ${deleteEx.message}")
+                        }
+                        throw e
                     }
                 }
-                null
+            } catch (e: Exception) {
+                // Check if it's a duplicate file error
+                if (e.message?.contains("Failed to build unique file", ignoreCase = true) == true ||
+                    e.message?.contains("unique", ignoreCase = true) == true) {
+                    suffix++
+                    lastError = e
+                    logD("TANHXXXX =>>>>> File đã tồn tại, thử lại với suffix $suffix")
+                    continue
+                } else {
+                    // Other error, fail immediately
+                    logD("TANHXXXX =>>>>> Lỗi khi tạo file: ${e.message}")
+                    return null
+                }
             }
         }
+
+        logD("TANHXXXX =>>>>> Không thể tạo file sau 100 lần thử: ${lastError?.message}")
+        return null
     }
 
 

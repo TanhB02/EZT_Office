@@ -16,7 +16,7 @@
 -keep class android.webkit.** { *; }
 
 # Keep JNI related classes
--keep class org.libreoffice.androidlib.ui.LOActivity { *; }
+-keep class org.libreoffice.androidlib.LOActivity { *; }
 
 # Keep all public and protected methods in public classes
 -keepclassmembers class * {
@@ -75,3 +75,14 @@
 
 # Keep data binding generated classes and their references
 -keep class org.libreoffice.androidlib.databinding.** { *; }
+
+# Keep ProgressDialog and its UI components
+-keep class org.libreoffice.androidlib.ui.ProgressDialog { *; }
+-keepclassmembers class org.libreoffice.androidlib.ui.ProgressDialog {
+    public *;
+    protected *;
+}
+
+# Keep AlertDialog for progress dialogs
+-keep class androidx.appcompat.app.AlertDialog { *; }
+-keep class androidx.appcompat.app.AlertDialog$Builder { *; }

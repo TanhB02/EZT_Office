@@ -142,7 +142,6 @@ class LOActivity : AppCompatActivity() {
             initUI()
             return
         }
-
         mProgressDialog!!.indeterminate(R.string.preparing_for_the_first_start_after_an_update)
 
         object : AsyncTask<Void?, Void?, Void?>() {
@@ -682,18 +681,32 @@ class LOActivity : AppCompatActivity() {
 
     /** Show the Saving progress and finish the app.  */
     fun finishWithProgress() {
+        Log.d(TAG, "finishWithProgress called")
         sendBroadcastMessage()
         finishAndRemoveTask()
+
     }
 
     private fun sendBroadcastMessage() {
-        sendBroadcast(Intent(Intent_Killed_Process))
+        Log.d(TAG, "Sending broadcast: $Intent_Killed_Process to package: $packageName")
+        val intent = Intent(Intent_Killed_Process).apply {
+            setPackage(packageName)
+            addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+        }
+        sendBroadcast(intent)
+        Log.d(TAG, "Broadcast sent successfully")
     }
 
 
     override fun onBackPressed() {
+        Log.d(TAG, "onBackPressed called")
         sendBroadcastMessage()
-        finishAndRemoveTask()
+
+        // Delay để broadcast có thời gian được deliver giữa các process
+        Handler(Looper.getMainLooper()).postDelayed({
+            Log.d(TAG, "Delay finished, calling finishAndRemoveTask()")
+            finishAndRemoveTask()
+        }, 300)
     }
 
     private fun loadDocument() {
@@ -892,7 +905,7 @@ class LOActivity : AppCompatActivity() {
 
                 try {
                     val text = messageJSON.getString("text")
-                    mProgressDialog!!.mTextView.setText(text)
+                    mProgressDialog!!.mTextView?.setText(text)
                 } catch (ignored: JSONException) {
                 }
                 try {

@@ -44,13 +44,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun openSystemPicker() {
         openSystemPicker(this,object : DocumentCallback {
-            override fun onDocumentClosed() {}
+            override fun onDocumentClosed() {
+                logD("TANHXXXX =>>>>> 11111")
+            }
 
             override fun onAdRevenueReceived(
                 valueMicros: Long,
                 currencyCode: String,
                 precisionType: Int
-            ) {}
+            ) {
+                logD("TANHXXXX =>>>>> 2222222")
+            }
         })
     }
 
@@ -59,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             Uri.parse("content://com.android.providers.downloads.documents/document/msf%3A1000005320"),
             object : DocumentCallback {
                 override fun onDocumentClosed() {
-                    logD("TANHXXXX =>>>>> onDocumentClosed")
+                    logD("TANHXXXX =>>>>> onAdRevenueReceived121212")
                 }
 
                 override fun onAdRevenueReceived(
@@ -71,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
+
 
     private fun createFile() {
         lifecycleScope.launch {
