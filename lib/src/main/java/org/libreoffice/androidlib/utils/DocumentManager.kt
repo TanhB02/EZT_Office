@@ -29,16 +29,16 @@ object DocumentManager {
     var pendingDocumentCallback: DocumentCallback? = null
 
 
-    fun getIntentToEdit(activity: Activity, uri: Uri?): Intent {
+    fun getIntentToEdit(context: Context, uri: Uri?): Intent {
         return Intent(Intent.ACTION_EDIT, uri).apply {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            component = ComponentName(activity.packageName, LOActivity::class.java.name)
+            component = ComponentName(context.packageName, LOActivity::class.java.name)
         }
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    fun Activity.registerCloseReceiver(
+    fun Context.registerCloseReceiver(
         action: String = Intent_Killed_Process,
         callback: DocumentCallback
     ) {

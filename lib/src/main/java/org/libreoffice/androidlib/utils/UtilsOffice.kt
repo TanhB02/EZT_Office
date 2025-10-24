@@ -1,11 +1,14 @@
 package org.libreoffice.androidlib.utils
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import org.libreoffice.androidlib.Intent_Killed_Process
 import org.libreoffice.androidlib.utils.DocumentManager.createFileFromTemplate
 import org.libreoffice.androidlib.utils.DocumentManager.documentPickerLauncher
@@ -21,17 +24,17 @@ import org.libreoffice.androidlib.utils.Preferences.showAds
 
 object UtilsOffice {
 
-    fun AppCompatActivity.setIDAdsBanner(idAdsBanner: String) {
+    fun Context.setIDAdsBanner(idAdsBanner: String) {
         init(this)
         bannerAdsId = idAdsBanner
     }
 
-    fun AppCompatActivity.setStateShowAds(stateShowAds: Boolean) {
+    fun Context.setStateShowAds(stateShowAds: Boolean) {
         init(this)
         showAds = stateShowAds
     }
     @JvmStatic
-    fun AppCompatActivity.openFile(uri: Uri, callback: DocumentCallback) {
+    fun Context.openFile(uri: Uri, callback: DocumentCallback) {
         try {
             contentResolver.takePersistableUriPermission(
                 uri,
@@ -44,7 +47,7 @@ object UtilsOffice {
     }
 
 
-    suspend fun AppCompatActivity.createFile(
+    suspend fun Context.createFile(
         fileName: String,
         fileType: String = "xlsx",
         callback: DocumentCallback
@@ -55,7 +58,7 @@ object UtilsOffice {
     }
 
 
-    fun AppCompatActivity.openSystemPicker(callback: DocumentCallback) {
+    fun Context.openSystemPicker(callback: DocumentCallback) {
         pendingDocumentCallback = callback
         try {
             documentPickerLauncher?.launch(mimeTypes)
@@ -69,7 +72,7 @@ object UtilsOffice {
         }
     }
 
-    fun AppCompatActivity.registerDocumentPicker() {
+    fun ComponentActivity.registerDocumentPicker() {
         documentPickerLauncher = registerForActivityResult(
             ActivityResultContracts.OpenDocument()
         ) { uri ->
@@ -77,6 +80,20 @@ object UtilsOffice {
             uri?.let {
                 pendingDocumentCallback?.let { callback ->
                     openFile(it, callback)
+                    pendingDocumentCallback = null
+                }
+            }
+        }
+    }
+
+    fun Fragment.registerDocumentPicker(context: Context) {
+        documentPickerLauncher = registerForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri ->
+            logD("TANHXXXX =>>>>> uri:${uri}")
+            uri?.let {
+                pendingDocumentCallback?.let { callback ->
+                    context.openFile(it, callback)
                     pendingDocumentCallback = null
                 }
             }

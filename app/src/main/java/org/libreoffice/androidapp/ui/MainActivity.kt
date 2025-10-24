@@ -2,20 +2,16 @@ package org.libreoffice.androidapp.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.databinding.ActivityMainBinding
 import org.libreoffice.androidlib.utils.DocumentCallback
 import org.libreoffice.androidlib.utils.DocumentManager.logD
-import org.libreoffice.androidlib.utils.UtilsOffice
 import org.libreoffice.androidlib.utils.UtilsOffice.createFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openSystemPicker
 import org.libreoffice.androidlib.utils.UtilsOffice.registerDocumentPicker
-import org.libreoffice.androidlib.utils.UtilsOffice.setIDAdsBanner
 import org.libreoffice.androidlib.utils.UtilsOffice.setStateShowAds
 
 class MainActivity : AppCompatActivity() {
