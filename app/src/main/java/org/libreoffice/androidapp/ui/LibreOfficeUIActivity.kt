@@ -57,8 +57,8 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
-import org.libreoffice.androidlib.LOActivityLauncher
 import org.libreoffice.androidlib.utils.DocumentCallback
+import org.libreoffice.androidlib.utils.DocumentManager.getIntentToEdit
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
 import java.io.FilenameFilter
@@ -362,17 +362,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
     }
 
     /** Build Intent to edit a Uri using the new multi-process architecture.  */
-    fun getIntentToEdit(uri: Uri?): Intent {
-        val i = Intent(Intent.ACTION_EDIT, uri)
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
-        val packageName = getApplicationContext().getPackageName()
-        val componentName = ComponentName(packageName, LOActivityLauncher::class.java.getName())
-        i.setComponent(componentName)
-
-        return i
-    }
 
     /*
      */
@@ -394,7 +384,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
 
         addDocumentToRecents(uri)
 
-        val i = getIntentToEdit(uri)
+        val i = getIntentToEdit(this@LibreOfficeUIActivity,uri)
         startActivity(i)
     }
 
@@ -773,7 +763,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
 
                 if (filename == null) continue
 
-                val intent = getIntentToEdit(shortcutUri)
+                val intent = getIntentToEdit(this@LibreOfficeUIActivity,shortcutUri)
                 val builder = ShortcutInfo.Builder(this, filename)
                     .setShortLabel(filename)
                     .setLongLabel(filename)
