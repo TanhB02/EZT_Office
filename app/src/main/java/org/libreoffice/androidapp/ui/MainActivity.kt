@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.databinding.ActivityMainBinding
-import org.libreoffice.androidlib.utils.DocumentCallback
-import org.libreoffice.androidlib.utils.DocumentManager.logD
+import org.libreoffice.androidlib.callback.DocumentCallback
+import org.libreoffice.androidlib.manager.DocumentManager.logD
 import org.libreoffice.androidlib.utils.UtilsOffice.createFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import org.libreoffice.androidlib.utils.UtilsOffice.openSystemPicker
@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         addEvents()
-        registerDocumentPicker()
-        setStateShowAds(true)
+        registerDocumentPicker(this)
+        setStateShowAds(this,true)
     }
 
     private fun addEvents() {
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openSystemPicker() {
-        openSystemPicker(object : DocumentCallback {
+        openSystemPicker(this,object : DocumentCallback {
             override fun onDocumentClosed() {}
 
             override fun onAdRevenueReceived(
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openFileFromUri() {
-        openFile(
+        openFile(this,
             Uri.parse("content://com.android.providers.downloads.documents/document/msf%3A1000005320"),
             object : DocumentCallback {
                 override fun onDocumentClosed() {
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createFile() {
         lifecycleScope.launch {
-            createFile(
+            createFile(this@MainActivity,
                 fileName = "1",
                 fileType = "xlsx",
                 object : DocumentCallback {

@@ -1,4 +1,4 @@
-package org.libreoffice.androidlib.utils
+package org.libreoffice.androidlib.manager
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdValue
 import org.libreoffice.androidlib.BuildConfig
-import org.libreoffice.androidlib.utils.DocumentCallback
+import org.libreoffice.androidlib.callback.DocumentCallback
 
 object AdRevenueManager {
     private const val TAG = "AdRevenueManager"

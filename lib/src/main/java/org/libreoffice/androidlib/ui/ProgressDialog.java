@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package org.libreoffice.androidlib;
+package org.libreoffice.androidlib.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import org.libreoffice.androidlib.R;
 
 /** Class to handle progress when loading, saving, or handling other time intensive operations. */
 public class ProgressDialog {
@@ -23,12 +25,12 @@ public class ProgressDialog {
     AlertDialog mProgressDialog = null;
 
     /** Various elements of the dialog. */
-    TextView mTextView;
-    ProgressBar mIndeterminateProgress;
-    ProgressBar mDeterminateProgress;
+    public TextView mTextView;
+    public ProgressBar mIndeterminateProgress;
+    public ProgressBar mDeterminateProgress;
 
     /** Current progress of the determinate progress bar. */
-    int mProgress = 0;
+    public int mProgress = 0;
 
     public ProgressDialog(Activity activity) {
         mActivity = activity;

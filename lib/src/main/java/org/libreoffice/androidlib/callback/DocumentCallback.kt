@@ -1,4 +1,4 @@
-package org.libreoffice.androidlib.utils
+package org.libreoffice.androidlib.callback
 
 interface DocumentCallback {
     fun onDocumentClosed()

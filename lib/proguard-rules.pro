@@ -8,7 +8,7 @@
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
--keepclassmembers class org.libreoffice.androidlib.LOActivity {
+-keepclassmembers class org.libreoffice.androidlib.ui.LOActivity {
     @android.webkit.JavascriptInterface <methods>;
 }
 
@@ -55,6 +55,22 @@
 -keep class java.util.concurrent.RecursiveAction { *; }
 -keep class java.util.concurrent.RecursiveTask { *; }
 
+# Keep Java Beans classes required by Jackson and other libraries
+-keep class java.beans.ConstructorProperties { *; }
+-keep class java.beans.Transient { *; }
+
+# Keep comprehensive Java reflection classes required by Google Guava and other libraries
+-keep class java.lang.reflect.** { *; }
+-keep class java.lang.reflect.AnnotatedType { *; }
+-keep class java.lang.reflect.AnnotatedType** { *; }
+-keep class java.lang.reflect.Type** { *; }
+-keep class java.lang.reflect.Method { *; }
+-keep class java.lang.reflect.Field { *; }
+-keep class java.lang.reflect.Constructor { *; }
+-keep class java.lang.reflect.Parameter { *; }
+-keep class java.lang.reflect.Executable { *; }
+-keep class java.lang.reflect.AccessibleObject { *; }
+
 # Keep all invoke related classes
 -keep class java.lang.invoke.** { *; }
 -keep class java.util.concurrent.** { *; }
@@ -82,8 +98,14 @@
 # Keep ShimmerFrameLayout specifically
 -keep class com.facebook.shimmer.ShimmerFrameLayout { *; }
 
-# Keep all methods and fields in ShimmerFrameLayout
--keepclassmembers class com.facebook.shimmer.ShimmerFrameLayout {
-    public *;
-    protected *;
-}
+# Keep Jackson support classes
+-keep class com.fasterxml.jackson.databind.ext.Java7SupportImpl { *; }
+-dontwarn com.fasterxml.jackson.**
+
+# Keep data binding generated classes and their references
+-keep class org.libreoffice.androidlib.databinding.** { *; }
+
+# Keep additional Java 8+ reflection classes that might be needed
+-keep class java.lang.Class** { *; }
+-keep class java.lang.Package** { *; }
+-keep class java.lang.annotation.** { *; }

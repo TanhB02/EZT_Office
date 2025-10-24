@@ -18,10 +18,9 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import org.libreoffice.androidlib.utils.AdRevenueManager
-import org.libreoffice.androidlib.BuildConfig
+import org.libreoffice.androidlib.manager.AdRevenueManager
 import org.libreoffice.androidlib.R
-import org.libreoffice.androidlib.utils.DocumentManager.logD
+import org.libreoffice.androidlib.manager.DocumentManager.logD
 import org.libreoffice.androidlib.utils.Preferences.bannerAdsId
 import org.libreoffice.androidlib.utils.Preferences.showAds
 

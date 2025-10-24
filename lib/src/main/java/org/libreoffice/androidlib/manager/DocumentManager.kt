@@ -1,7 +1,6 @@
-package org.libreoffice.androidlib.utils
+package org.libreoffice.androidlib.manager
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.ContentValues
@@ -16,9 +15,8 @@ import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.libreoffice.androidlib.utils.AdRevenueManager
 import org.libreoffice.androidlib.BuildConfig
-import org.libreoffice.androidlib.utils.DocumentCallback
+import org.libreoffice.androidlib.callback.DocumentCallback
 import org.libreoffice.androidlib.Intent_Killed_Process
 import org.libreoffice.androidlib.LOActivity
 import java.io.File

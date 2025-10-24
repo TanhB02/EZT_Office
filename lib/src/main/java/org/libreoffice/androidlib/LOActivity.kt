@@ -53,8 +53,10 @@ import org.json.JSONObject
 import org.libreoffice.androidlib.ads.BannerAds.initBannerAds
 import org.libreoffice.androidlib.databinding.LolibActivityMainBinding
 import org.libreoffice.androidlib.lok.LokClipboardData
-import org.libreoffice.androidlib.utils.DocumentManager.logD
+import org.libreoffice.androidlib.ui.ProgressDialog
 import org.libreoffice.androidlib.utils.Preferences
+import org.libreoffice.androidlib.webview.COWebView
+import org.libreoffice.androidlib.webview.MobileSocket
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream

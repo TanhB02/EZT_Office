@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LOActivity">
+    tools:context=".ui.LOActivity">
 
-    <org.libreoffice.androidlib.COWebView
+    <org.libreoffice.androidlib.webview.COWebView
         android:id="@+id/browser"
         android:layout_width="match_parent"
         android:layout_height="0dp"

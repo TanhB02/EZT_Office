@@ -1,4 +1,4 @@
-package org.libreoffice.androidlib
+package org.libreoffice.androidlib.provider
 
 import android.app.Application
 import android.content.ContentProvider
@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.webkit.WebView
-import java.io.File
 
 class WebViewInitProvider : ContentProvider() {
 

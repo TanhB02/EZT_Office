@@ -25,3 +25,20 @@
 -keepclassmembers class MainActivity {
    void callFakeWebsocketOnMessage(java.lang.String);
 }
+
+# Keep classes required by Jackson and other libraries
+-keep class java.beans.ConstructorProperties { *; }
+-keep class java.beans.Transient { *; }
+-keep class java.lang.reflect.AnnotatedType { *; }
+
+# Keep Jackson support classes
+-keep class com.fasterxml.jackson.databind.ext.Java7SupportImpl { *; }
+
+# Keep Google Guava reflection classes
+-keep class com.google.common.reflect.Invokable$ConstructorInvokable { *; }
+
+# Keep all classes in java.beans package
+-keep class java.beans.** { *; }
+
+# Keep all classes in java.lang.reflect that are referenced
+-keep class java.lang.reflect.AnnotatedType** { *; }

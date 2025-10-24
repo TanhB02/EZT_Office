@@ -72,6 +72,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += [
+                "-Xemit-jvm-type-annotations",
+                "-Xjsr305=strict"
+        ]
     }
 
     lintOptions {
@@ -118,7 +122,7 @@ afterEvaluate {
             release(MavenPublication) {
                 groupId = "ezt.documents"
                 artifactId = "libreoffice"
-                version = "1.0.0-beta9"
+                version = "1.0.0-beta18"
 
                 artifact(tasks.getByName("bundleReleaseAar"))
 

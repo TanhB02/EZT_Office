@@ -8,7 +8,6 @@ package org.libreoffice.androidapp.ui
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -57,8 +56,8 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
 import org.libreoffice.androidapp.R
 import org.libreoffice.androidlib.LOActivity
-import org.libreoffice.androidlib.utils.DocumentCallback
-import org.libreoffice.androidlib.utils.DocumentManager.getIntentToEdit
+import org.libreoffice.androidlib.callback.DocumentCallback
+import org.libreoffice.androidlib.manager.DocumentManager.getIntentToEdit
 import org.libreoffice.androidlib.utils.UtilsOffice.openFile
 import java.io.FileFilter
 import java.io.FilenameFilter
@@ -311,7 +310,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         when (item.getItemId()) {
             R.id.context_menu_open -> {
-                openFile(currentlySelectedFile!!,object : DocumentCallback{
+                openFile(this,currentlySelectedFile!!,object : DocumentCallback{
                     override fun onDocumentClosed() {
                         TODO("Not yet implemented")
                     }
@@ -625,7 +624,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
 
                 val uri = data.getData()
                 if (uri == null) return
-                openFile(uri,object : DocumentCallback{
+                openFile(this,uri,object : DocumentCallback{
                     override fun onDocumentClosed() {
 
                     }
@@ -648,7 +647,7 @@ class LibreOfficeUIActivity : AppCompatActivity() {
                    //TODo TanhX check
                   /* createNewFile(data.getData()!!, extension)*/
                }
-                openFile(data.getData()!!,object : DocumentCallback{
+                openFile(this,data.getData()!!,object : DocumentCallback{
                     override fun onDocumentClosed() {
 
                     }
